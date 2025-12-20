@@ -2,9 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "type":"module",
-  "main": "sever.js",
+  "type": "module",
+  "main": "server.js",
   "scripts": {
+    "start": "node src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,8 +19,10 @@
   },
   "homepage": "https://github.com/riyalchandrakar/Deadline-Risk-Radar#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.2"
   }
 }
