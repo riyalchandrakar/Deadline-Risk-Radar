@@ -8,18 +8,13 @@ const taskSchema = new mongoose.Schema(
     priority: {
       type: String,
       enum: ["low", "medium", "high"],
-      default: "medium"
-    },
-    riskLevel: {
-      type: String,
-      enum: ["safe", "at_risk", "likely_late"],
-      required: true
+      default: "medium",
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
-    }
+      required: true,
+    },
   },
   { timestamps: true }
 );
