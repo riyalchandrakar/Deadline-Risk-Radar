@@ -24,15 +24,26 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
+  console.log("LOGIN ATTEMPT:", email, password);
+
   const user = await User.findOne({ email });
-  if (!user || !(await user.matchPassword(password))) {
-    return res.status(401).json({ message: "Invalid credentials" });
+  console.log("USER FOUND:", user);
+
+  if (!user) {
+    return res.status(401).json({ message: "User not found" });
+  }
+
+  const isMatch = await user.matchPassword(password);
+  console.log("PASSWORD MATCH:", isMatch);
+
+  if (!isMatch) {
+    return res.status(401).json({ message: "Invalid password" });
   }
 
   res.json({
     _id: user.id,
     name: user.name,
     email: user.email,
-    token: generateToken(user.id)
+    token: generateToken(user.id),
   });
 };
