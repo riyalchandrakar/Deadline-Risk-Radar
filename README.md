@@ -135,3 +135,32 @@ Start the frontend application:
 ```bash
 npm run dev
 ```
+<br>
+
+## Time Zone Handling & Risk Calculation
+
+To ensure consistent and predictable task risk evaluation across local development and production environments, this application standardizes all deadline risk calculations to **Indian Standard Time (IST)**.
+
+### Why IST?
+- The primary target users are India-based.
+- Cloud servers often run in UTC, while local systems use regional timezones.
+- Using IST avoids mismatches between local and deployed environments.
+- It ensures that deadlines like “due today” behave as users realistically expect.
+
+### How it works
+- The backend calculates risk using server time adjusted to IST.
+- Task deadlines are treated as **end-of-day in IST**.
+- Risk levels (**Safe**, **At Risk**, **Likely Late**) are calculated dynamically on every request and are not stored permanently in the database.
+
+### Benefits
+- Consistent results across local and deployed environments
+- No dependency on client-side time (prevents manipulation)
+- Human-realistic deadline evaluation for Indian users
+
+### Future Scope
+The system can be extended to support **user-specific time zones** by:
+- Storing each user’s preferred timezone
+- Converting UTC timestamps to the user’s local timezone before risk calculation
+
+This design decision ensures correctness today while remaining scalable for international use in the future.
+
