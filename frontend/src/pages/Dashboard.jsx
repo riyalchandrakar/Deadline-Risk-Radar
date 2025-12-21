@@ -12,12 +12,24 @@ const Dashboard = () => {
     api.get("/tasks").then((res) => setTasks(res.data));
   }, []);
 
+  // 🔄 Update task in state after edit
+  const updateTaskInList = (updatedTask) => {
+    setTasks((prev) =>
+      prev.map((t) => (t._id === updatedTask._id ? updatedTask : t))
+    );
+  };
+
+  // 🗑 Remove task from state after delete
+  const deleteTaskFromList = (id) => {
+    setTasks((prev) => prev.filter((t) => t._id !== id));
+  };
+
   const filteredTasks =
     filter === "all" ? tasks : tasks.filter((t) => t.riskLevel === filter);
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <TaskForm onAdd={(task) => setTasks([task, ...tasks])} />
+      <TaskForm onAdd={(task) => setTasks((prev) => [task, ...prev])} />
       <FilterBar active={filter} setActive={setFilter} />
 
       {filteredTasks.length === 0 && (
@@ -26,7 +38,12 @@ const Dashboard = () => {
 
       <div className="space-y-3">
         {filteredTasks.map((task) => (
-          <TaskCard key={task._id} task={task} />
+          <TaskCard
+            key={task._id}
+            task={task}
+            onUpdate={updateTaskInList}
+            onDelete={deleteTaskFromList}
+          />
         ))}
       </div>
     </div>
