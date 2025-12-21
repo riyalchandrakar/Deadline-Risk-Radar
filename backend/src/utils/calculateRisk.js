@@ -1,26 +1,18 @@
 export const calculateRisk = ({ dueDate, estimatedHours, priority }) => {
-  // 🇮🇳 IST offset (UTC + 5:30)
   const IST_OFFSET = 5.5 * 60 * 60 * 1000;
+  const now = new Date(Date.now() + IST_OFFSET);
 
-  // Current time in IST
-  const nowIST = new Date(Date.now() + IST_OFFSET);
+  const endOfDueDate = new Date(dueDate);
+  endOfDueDate.setUTCHours(23, 59, 59, 999);
 
-  // Due date END OF DAY in IST
-  const endOfDueDateIST = new Date(dueDate);
-  endOfDueDateIST.setUTCHours(23, 59, 59, 999);
-
-  // Remaining time in hours (IST)
   const hoursLeft =
-    (endOfDueDateIST - nowIST) / (1000 * 60 * 60);
+    (endOfDueDate - now) / (1000 * 60 * 60);
 
-  // Deadline crossed
   if (hoursLeft <= 0) return "likely_late";
 
-  // Real-world assumptions
   const WORK_HOURS_PER_DAY = 8;
   const BUFFER = 1.2;
 
-  // Priority sensitivity
   const prioritySensitivity = {
     low: 1.0,
     medium: 1.15,
@@ -29,31 +21,22 @@ export const calculateRisk = ({ dueDate, estimatedHours, priority }) => {
 
   const sensitivity = prioritySensitivity[priority] || 1;
 
-  // Required effort
-  const requiredHours = estimatedHours * BUFFER;
+  // ✅ MULTI-DAY CAPACITY (THIS WAS MISSING)
+  const daysLeft = Math.ceil(hoursLeft / 24);
+  const totalAvailableHours = daysLeft * WORK_HOURS_PER_DAY;
 
-  // Max realistic work hours in a day
-  const effectiveAvailableHours = Math.min(
-    hoursLeft,
-    WORK_HOURS_PER_DAY
-  );
+  const requiredHours =
+    estimatedHours * BUFFER * sensitivity;
 
-  // 🟢 SAFE
-  if (
-    effectiveAvailableHours >=
-    requiredHours * sensitivity * 1.5
-  ) {
+  // SAFE
+  if (totalAvailableHours >= requiredHours * 1.5) {
     return "safe";
   }
 
-  // 🟡 AT RISK
-  if (
-    effectiveAvailableHours >=
-    requiredHours * sensitivity
-  ) {
+  // AT RISK
+  if (totalAvailableHours >= requiredHours) {
     return "at_risk";
   }
 
-  // 🔴 LIKELY LATE
   return "likely_late";
 };
